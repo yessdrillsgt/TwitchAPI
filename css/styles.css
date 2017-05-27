@@ -39,3 +39,7 @@ body {
 	color: rgb(120, 170, 255); // Light blue
 	size: 25px;
 }
+
+#userProfilePic {
+	width: 100%;
+}

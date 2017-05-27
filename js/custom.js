@@ -1,4 +1,93 @@
 $(document).ready(function(){
+	// Declare global variables
+	const ONLINE = 'online';
+	const OFFLINE = 'offline';
+	
+	
+	$(function(){
+		var twitchUsers = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
+		var onlineStatus;
+		var statusImage;
+		var streamURL;
+		var logoURL;
+		
+		for (var i = 0; i < twitchUsers.length; i++){
+			AddOnlineRecord(twitchUsers[i]);
+		}
+		
+		
+		function AddOnlineRecord(twitchUser){
+			$.ajax( {
+				url: ' https://wind-bow.gomix.me/twitch-api/streams/' + twitchUsers[i] + '?callback=?',
+				dataType: 'json',
+				type: 'GET',
+				success: function(data) {
+					/* console.log('stream');
+					console.log(data); */
+					
+					if (data.stream !== null) {
+						logoURL = data.stream.channel.logo;
+						onlineStatus = data.stream.channel.status;
+						statusImage = 'img/glyphicons-52-eye-open.png';
+						streamURL = data.stream.channel.url;
+						
+						AppendDiv(logoURL, onlineStatus, statusImage, streamURL, data.stream.channel.display_name, true); 
+					
+					} else {
+						AddOfflineRecord(twitchUser);
+					}
+				}
+			});
+		}; // End of AddOnlineRecord
+		
+		
+		function AddOfflineRecord(twitchUser){
+			$.ajax( {
+				url: ' https://wind-bow.gomix.me/twitch-api/channels/' + twitchUser + '?callback=?',
+				dataType: 'json',
+				type: 'GET',
+				success: function(data) {
+					if(data.logo !== null){
+						logoURL = data.logo;
+					} else {
+						logoURL = 'img/404_user_70x70.png';
+					}
+					
+					onlineStatus = '';
+					statusImage  = 'img/glyphicons-53-eye-close.png';
+					streamURL = data.url;
+					
+					/* console.log('channel');
+					console.log(data); */
+					
+					AppendDiv(logoURL, onlineStatus, statusImage, streamURL, data.display_name, false); 
+				}
+			});
+		}; // End of AddOfflineRecord
+	});
+	
+	
+	function AppendDiv(logoURL, onlineStatus, statusImage, streamURL, twitchUser, online){
+		var classStatus;
+		
+		if (online){
+			classStatus = ONLINE;
+		} else {
+			classStatus = OFFLINE;
+		}
+		
+		var record = 	'<div class="row userRecord ' + classStatus + '"> ' +
+							'<div class="col-xs-4 text-center"><img id="userProfilePic" class="img-rounded img-responsive" src="' + logoURL + '" alt="Twitch profile pic"></div> ' +
+							'<div class="col-xs-4"><a target="_blank" id="userTwitchPage" href="' + streamURL + '"><span id="userName">' + twitchUser + '</span></a> ' +
+								'<div id="onlineInfo">' + onlineStatus + '</div> ' +
+							'</div> ' +
+							'<div class="col-xs-4 text-center"><img id="userStatus" src="' + statusImage + '" alt="Status Image"></div> ' +
+						'</div> '
+
+		$('.container').append(record);	
+	};
+	
+	
 	// Adds the active class to the element on hover
 	$('.header').on('mouseenter', function(){
 		$(this).addClass('active');
@@ -25,94 +114,20 @@ $(document).ready(function(){
 		var selectedElement = $(this).attr('id')
 		switch(selectedElement){
 			case 'headerAll':
+				$('.' + ONLINE).show();
+				$('.' + OFFLINE).show();
 				
 				break;
 			case 'headerOnline':
+				$('.' + ONLINE).show();
+				$('.' + OFFLINE).hide();
 				
 				break;
 			case 'headerOffline':
+				$('.' + ONLINE).hide();
+				$('.' + OFFLINE).show();
 				
 				break;
 		}
 	});
-	
-	$(function(){
-		var twitchUsers = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
-		var onlineStatus;
-		var statusImage;
-		var streamURL;
-		var logoURL;
-		var offlineRecords = [];
-		
-		
-		for (var i = 0; i < twitchUsers.length; i++){
-			
-			$.ajax( {
-				url: ' https://wind-bow.gomix.me/twitch-api/streams/' + twitchUsers[i] + '?callback=?',
-				dataType: 'json',
-				type: 'GET',
-				async: false,
-				success: function(data) {
-					alert('inside ajax');
-					console.log('stream');
-					console.log(data);
-					
-					if (data.stream !== null) {
-						logoURL = data.stream.channel.logo;
-						onlineStatus = data.stream.channel.status;
-						statusImage = 'img/glyphicons-52-eye-open.png';
-						streamURL = data.stream.channel.url;
-						
-						AppendDiv(logoURL, onlineStatus, statusImage, streamURL, data.stream.channel.display_name); 
-					
-					} else {
-						offlineRecords.push(twitchUsers[i]);
-						//AddOfflineRecord( twitchUsers[i] );
-					}
-				}
-			});
-		}
-		alert('outside ajax');
-		console.log('offlineRecords');
-		console.log(offlineRecords);
-		if (offlineRecords.length > 0){
-			for (var i = 0; i < offlineRecords.length; i++){
-				AddOfflineRecord (offlineRecords[i]);
-			}
-		}
-	});
-	
-	function AddOfflineRecord(twitchUser){
-		alert(twitchUser);
-		$.ajax( {
-			url: ' https://wind-bow.gomix.me/twitch-api/channels/' + twitchUser + '?callback=?',
-			dataType: 'json',
-			type: 'POST',
-			async: false,
-			success: function(data) {
-				logoURL = data.logo;
-				onlineStatus = '';
-				statusImage  = 'img/glyphicons-53-eye-close.png';
-				streamURL = data.url;
-				
-				console.log('channel');
-				console.log(data);
-				
-				AppendDiv(logoURL, onlineStatus, statusImage, streamURL, data.channel.display_name); 
-			}
-		});
-	};
-	
-	function AppendDiv(logoURL, onlineStatus, statusImage, streamURL, twitchUser){
-		var record = 	'<div class="row userRecord"> ' +
-							'<div class="col-xs-4 text-center"><img id="userProfilePic" class="img-rounded img-responsive" src="' + logoURL + '" alt="Twitch profile pic"></div> ' +
-							'<div class="col-xs-4"><a target="_blank" id="userTwitchPage" href="' + streamURL + '"><span id="userName">' + twitchUser + '</span></a> ' +
-								'<div id="onlineInfo">' + onlineStatus + '</div> ' +
-							'</div> ' +
-							'<div class="col-xs-4 text-center"><img id="userStatus" src="' + statusImage + '" alt="Status Image"></div> ' +
-						'</div> '
-
-		$('.container').append(record);	
-	};
-	
 });
