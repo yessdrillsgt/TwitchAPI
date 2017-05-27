@@ -1,0 +1,41 @@
+@font-face {
+    font-family: Caricature;
+    src: url(../fonts/DoctorSoosBold.ttf);
+}
+
+body {
+	background-color: rgb(120, 170, 255); // Light blue
+}
+
+.container {
+	width: 35%;
+	margin: auto;
+	margin-top: 5%;
+}
+
+#headerContents{
+	text-align: center;
+	color: white;
+	font-family: Caricature;
+	font-size: 35px;
+	opacity: 0.8;
+}
+
+#headerContents > .active {
+	background-color: rgb(19, 150, 165); // darker cyan
+	border-width: 2px;
+	border-radius: 15px 15px 0px 0px;
+}
+
+#headerContents > .inactive {
+	background-color: rgb(99, 239, 255); // light cyan
+	border-width: 2px;
+	border-radius: 15px 15px 0px 0px;
+}
+
+.userRecord {
+	padding: 10px;
+	background-color: white;
+	color: rgb(120, 170, 255); // Light blue
+	size: 25px;
+}
